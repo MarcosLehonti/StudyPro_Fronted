@@ -2,7 +2,7 @@ import { useState } from "react";
 
 // Usa variable de entorno de Vite (defínela en tu frontend .env)
 // VITE_API_URL=http://localhost:3000
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+const API_URL = import.meta.env.VITE_API_URL ?? "https://studypro-backend.onrender.com";
 
 export default function Register() {
   const [form, setForm] = useState({

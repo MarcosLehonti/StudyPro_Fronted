@@ -23,7 +23,7 @@ type PasswordForm = {
   confirmPassword: string;
 };
 
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:4000/api/users';
+const API_URL = import.meta.env.VITE_API_URL ?? 'https://studypro-backend.onrender.com/api/users';
 
 export default function Profile() {
   const [profile, setProfile] = useState<UserProfile | null>(null);
