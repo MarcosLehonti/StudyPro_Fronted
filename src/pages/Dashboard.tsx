@@ -1,10 +1,17 @@
 import { useState } from "react";
-import { Outlet, Link } from "react-router-dom";
+import { Outlet, Link, useNavigate } from "react-router-dom";
 
 export default function DashboardLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [coursesMenuOpen, setCoursesMenuOpen] = useState(false);
-  const [groupsMenuOpen, setGroupsMenuOpen] = useState(false); // 👈 nuevo estado para Groups
+  const [groupsMenuOpen, setGroupsMenuOpen] = useState(false);
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    navigate("/login", { replace: true });
+  };
 
   return (
     <div className="min-h-full">
@@ -24,7 +31,7 @@ export default function DashboardLayout() {
               <div className="hidden md:block">
                 <div className="ml-10 flex items-baseline space-x-4">
                   <Link
-                    to="/"
+                    to="/stats"
                     className="bg-gray-900 text-white rounded-md px-3 py-2 text-sm font-medium"
                   >
                     Dashboard
@@ -118,6 +125,14 @@ export default function DashboardLayout() {
                   >
                     Profile
                   </Link>
+
+                  {/* 🔴 Botón de cerrar sesión */}
+                  <button
+                    onClick={handleLogout}
+                    className="text-gray-300 hover:bg-red-600 hover:text-white rounded-md px-3 py-2 text-sm font-medium transition-colors"
+                  >
+                    Cerrar sesión
+                  </button>
                 </div>
               </div>
             </div>
@@ -205,9 +220,9 @@ export default function DashboardLayout() {
                     to="/my-groups"
                     className="block px-4 py-2 text-sm text-gray-200 hover:bg-gray-600"
                     onClick={() => setGroupsMenuOpen(false)}
-                    >
-                      My Groups
-                    </Link>
+                  >
+                    My Groups
+                  </Link>
                 </div>
               )}
             </div>
@@ -254,6 +269,18 @@ export default function DashboardLayout() {
             >
               Profile
             </Link>
+
+            {/* 🔴 Botón cerrar sesión móvil */}
+            <button
+              onClick={() => {
+                localStorage.removeItem("token");
+                localStorage.removeItem("user");
+                navigate("/login", { replace: true });
+              }}
+              className="w-full text-left text-red-500 hover:text-red-400 block rounded-md px-3 py-2 text-base font-medium"
+            >
+              Cerrar sesión
+            </button>
           </div>
         )}
       </nav>

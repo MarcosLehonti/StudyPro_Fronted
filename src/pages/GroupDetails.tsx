@@ -61,6 +61,7 @@ export default function GroupDetails() {
   // 🧠 GEMINI
   const [geminiResponse, setGeminiResponse] = useState<string | null>(null);
   const [geminiLoading, setGeminiLoading] = useState(false);
+  const [activeMeetingId, setActiveMeetingId] = useState<number | null>(null); // <-- Mostrar debajo del botón
 
   useEffect(() => {
     const fetchGroupDetails = async () => {
@@ -144,9 +145,10 @@ export default function GroupDetails() {
     }
   };
 
-  const askGeminiForTopic = async (topic: string) => {
+  const askGeminiForTopic = async (topic: string, meetingId: number) => {
     setGeminiLoading(true);
     setGeminiResponse(null);
+    setActiveMeetingId(meetingId);
     try {
       const token = localStorage.getItem("token");
       const res = await fetch(`${API_URL}/api/gemini/ask`, {
@@ -168,6 +170,38 @@ export default function GroupDetails() {
     } finally {
       setGeminiLoading(false);
     }
+  };
+
+  // 🧩 Función para transformar el texto de Gemini en lista de enlaces con descripciones
+  const parseGeminiResponse = (text: string) => {
+    const linkRegex = /(https?:\/\/[^\s]+)/g;
+    const lines = text.split("\n").filter((line) => line.trim() !== "");
+    return lines.map((line, idx) => {
+      const match = line.match(linkRegex);
+      if (match) {
+        const url = match[0];
+        const description = line.replace(url, "").trim() || "Recurso recomendado";
+        return (
+          <li key={idx} className="mb-2">
+            🔗{" "}
+            <a
+              href={url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-400 hover:text-blue-300 underline"
+            >
+              {url}
+            </a>
+            <span className="text-gray-300"> — {description}</span>
+          </li>
+        );
+      }
+      return (
+        <li key={idx} className="text-gray-400">
+          {line}
+        </li>
+      );
+    });
   };
 
   if (loading) return <p className="text-center text-gray-400 mt-10">Cargando...</p>;
@@ -228,12 +262,25 @@ export default function GroupDetails() {
 
                   {/* 🧠 Botón para obtener material de estudio */}
                   {meeting.topic_name && (
-                    <button
-                      onClick={() => askGeminiForTopic(meeting.topic_name!)}
-                      className="mt-2 bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded"
-                    >
-                      🧠 Obtener material con IA
-                    </button>
+                    <div className="mt-2">
+                      <button
+                        onClick={() => askGeminiForTopic(meeting.topic_name!, meeting.id)}
+                        className="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded"
+                      >
+                        🧠 Obtener material con IA
+                      </button>
+
+                      {/* Mostrar material debajo del botón */}
+                      {activeMeetingId === meeting.id && (
+                        <div className="mt-3 bg-gray-700 p-3 rounded-lg border border-gray-600">
+                          {geminiLoading ? (
+                            <p className="text-indigo-300">Generando material de estudio...</p>
+                          ) : geminiResponse ? (
+                            <ul className="list-disc list-inside">{parseGeminiResponse(geminiResponse)}</ul>
+                          ) : null}
+                        </div>
+                      )}
+                    </div>
                   )}
                 </li>
               ))}
@@ -322,22 +369,6 @@ export default function GroupDetails() {
             </button>
           </form>
         </div>
-
-        {/* 🧠 GEMINI: Mostrar material generado */}
-        {geminiLoading && (
-          <p className="text-center text-indigo-300 mt-4">Generando material de estudio...</p>
-        )}
-
-        {geminiResponse && (
-          <div className="bg-gray-800 p-4 rounded-lg border border-gray-700 mt-6">
-            <h3 className="text-lg font-semibold text-indigo-300 mb-2">
-              📚 Material sugerido por Gemini
-            </h3>
-            <pre className="text-gray-300 whitespace-pre-wrap">
-              {geminiResponse}
-            </pre>
-          </div>
-        )}
 
         <p className="mt-6 text-sm text-gray-400">
           🧑‍💻 <strong>Creador:</strong> {group.creator.name} ({group.creator.email})

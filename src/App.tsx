@@ -10,6 +10,7 @@ import CreateGroup from "./pages/CreateGroup";
 import PublicGroups from "./pages/PublicGroups";
 import MyGroups from "./pages/MyGroups";
 import GroupDetails from "./pages/GroupDetails";
+import StatsDashboard from "./pages/StatsDashboard";
 
 import "./index.css";
 
@@ -35,6 +36,8 @@ function App() {
           <Route path="/list-groups" element={<PublicGroups />} />
           <Route path="/my-groups" element={<MyGroups />} />
           <Route path="/groups/:id" element={<GroupDetails />} />
+          <Route path="/stats" element={<StatsDashboard />} />
+
 
           
           {/* 👆 aquí podés ir agregando otras vistas: /menu, /reports, etc. */}

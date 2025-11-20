@@ -37,7 +37,7 @@ export default function Login() {
       // si tu backend devuelve user, también podrías guardar:
       // localStorage.setItem("user", JSON.stringify(data.user));
 
-      navigate("/dashboard", { replace: true }); // ← redirección
+      navigate("/stats", { replace: true }); // ← redirección
     } catch (err: any) {
       setMsg(err.message || "Error en el login");
     } finally {
